@@ -17,19 +17,21 @@ class User(AbstractUser):
     def __str__(self):
         return str(self.username)
 
+
+
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>BOOK<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 class Book(models.Model):
-    book_id = models.CharField( max_length=50,unique=True)
-    book_name = models.CharField(max_length=100)
-    book_price = models.IntegerField()
-    book_author = models.CharField(max_length = 100)
-    book_dateofpublication=models.DateField(auto_now=False, auto_now_add=False)
+    book_id = models.CharField( max_length=50,unique=True , null=True)
+    book_name = models.CharField(max_length=100 , blank=True,null = True)
+    book_price = models.IntegerField( blank=True,null = True)
+    book_author = models.CharField(max_length = 100, blank=True,null = True)
+    book_dateofpublication=models.DateField(auto_now=False, auto_now_add=False, blank=True,null = True)
     add_on_date = models.DateField(default=datetime.datetime.now, blank=True)
-    book_in_language=models.CharField(max_length=40)
-
+    book_in_language=models.CharField(max_length=40, blank=True,null = True)
+    add_by = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return self.book_name
+        return str(self.book_name)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>LEND BOOK<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 class LendBook(models.Model):
@@ -40,13 +42,12 @@ class LendBook(models.Model):
     tc = models.BooleanField()
 
     def __str__(self):
-        return str(self.user)   
+        return str(self.book)   
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT DONE<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 class PaymentDone(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    lend_book = models.ForeignKey(LendBook, on_delete = models.CASCADE)
     payment_done = models.BooleanField()
 
 

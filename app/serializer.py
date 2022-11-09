@@ -28,12 +28,18 @@ class LoginSerializer(serializers.Serializer):
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ('book_id', 'book_name', 'book_price', 'book_author', 'book_dateofpublication', 'book_in_language', )
+        fields = ('book_id', 'book_name', 'book_price', 'book_author', 'book_dateofpublication', 'book_in_language', 'add_by')
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>LEND BOOK<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 class LendBookSerializer(serializers.ModelSerializer):
+    book = serializers.ReadOnlyField(source='book.book_name')
+
     class Meta:
         model = LendBook
-        fields = ( 'book', 'tc' , 'fine' )
+        fields = ['book', 'tc' , 'fine' ]
         # depth =1
-    
+class PaymentDoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentDone
+        fields = ('payment_done' ,)
+
     
