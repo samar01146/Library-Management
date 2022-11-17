@@ -17,8 +17,6 @@ class User(AbstractUser):
     def __str__(self):
         return str(self.username)
 
-
-
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>BOOK<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 class Book(models.Model):
     book_id = models.CharField( max_length=50,unique=True , null=True)
@@ -49,7 +47,7 @@ class LendBook(models.Model):
 class PaymentDone(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     payment_done = models.BooleanField()
-
+    total_amount = models.IntegerField(null=True)     
 
     def __str__(self):
         return str(self.user)

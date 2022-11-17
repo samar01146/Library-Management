@@ -23,4 +23,6 @@ class IssuedBook(admin.ModelAdmin):
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT DONE<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 @admin.register(PaymentDone)
 class AdminPaymentDone(admin.ModelAdmin):
-    list_display = ('payment_done',)
+    list_display = ('user','payment_done', 'total_amount')
+    # def new_field (self , obj):
+    #     return obj.

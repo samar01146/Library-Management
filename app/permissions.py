@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 
 
-class AuthorAllStaffAllButEditOrReadOnly(permissions.BasePermission):
+class OnlyAdmin(permissions.BasePermission):
     # edit_methods = ("PUT")
     def has_permission(self, request, view):
         if request.user.is_authenticated and request.user.type ==  "admin":

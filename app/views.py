@@ -1,17 +1,18 @@
+from datetime import date, timedelta
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
-from .models import *
+from django.utils import timezone
+from rest_framework import status
+from rest_framework.authentication import (BasicAuthentication,
+                                           SessionAuthentication)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
-from .serializer import *
-from django.contrib.auth import authenticate, login , logout
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from .permissions import*
-from datetime import date, timedelta
-from django.utils import timezone
-        
+
+from .models import *
+from .permissions import *
+from .serializer import *
 
 
 # Creating tokens manually
@@ -69,7 +70,7 @@ class BookView(APIView):
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>BOOK ENTRY<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 class BookEntryView(APIView):
-    permission_classes = [AuthorAllStaffAllButEditOrReadOnly]
+    permission_classes = [OnlyAdmin]
     def post(self, request):
         # Add_by = 
         # user = User.objects.filter(username = request.user).first()
@@ -91,7 +92,7 @@ class BookEntryView(APIView):
             
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>BOOK PARTIALLY UPDATE<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 class BookUpdate(APIView):
-    permission_classes = [AuthorAllStaffAllButEditOrReadOnly]
+    permission_classes = [OnlyAdmin]
     def put(self, request , id = None):
         book = Book.objects.get(id=id)
         data = request.data
@@ -103,7 +104,7 @@ class BookUpdate(APIView):
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>DELETE BOOK<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 class BookDelete(APIView):
-    permission_classes = [AuthorAllStaffAllButEditOrReadOnly]
+    permission_classes = [OnlyAdmin]
     def delete(self, request , id=None):
         book = Book.objects.get(id=id)
         book.delete()
@@ -116,8 +117,8 @@ class LendBookView(APIView):
         get_book_on = LendBook.objects.filter(user=request.user).values_list('issued_date',flat=True).first()
         if get_book_on:
             return_book_on = (datetime.date.today() - get_book_on.date())
-            # dates = return_book_on.days
-            dates=7
+            dates = return_book_on.days
+            # dates=7
             student = LendBook.objects.filter(user= request.user)
             serializers = LendBookSerializer(student , many=True)
             fi = 30
@@ -153,13 +154,16 @@ class LendBookView(APIView):
                 return Response({'msg' : 'You have to Select Terms and Condition Only True if you want to take the book'})
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>PAYMENT DONE<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
-
 class PaymentDoneView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self , request):
         lendbook = list(LendBook.objects.filter(user = request.user).values_list("book__book_name"))
         late_fees = list(LendBook.objects.filter(user=request.user).values_list('fine'))
+        d = LendBook.objects.filter(user=request.user).values_list('issued_date',flat=True)[0]
+        f = d.date()
+        # for i in d:
+        #     print("🚀 ~ file: views.py ~ line 160 ~ date",i.day)
+        
         data = request.data
         paymentdone = request.data.get('payment_done')
         serializers =  PaymentDoneSerializer(data=data)
@@ -168,13 +172,4 @@ class PaymentDoneView(APIView):
             serializers.save(user = request.user)
             return Response({'message' : "okay !!!!!!!!!! Thanks ,     Your Payment is Done.    " ,  "data":serializers.data} )
         return Response({'message' : f"You have take this Book>>>{lendbook}  your late fees amount is>>>>> {late_fees} .........pay the fees" , 'errors':serializers.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
-
-        
-
 

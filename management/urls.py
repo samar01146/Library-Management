@@ -29,10 +29,4 @@ urlpatterns = [
     path('bookdelete/<int:id>/', BookDelete.as_view() , name='bookdelete'),
     path('lendbook/', LendBookView.as_view() , name='lendbook'),
     path('paymentdone/', PaymentDoneView.as_view() , name='paymentdone'),
-
-    
-    
-    
-
-
 ]
